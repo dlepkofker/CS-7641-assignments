@@ -39,21 +39,21 @@ if __name__ == '__main__':
 
     seed = args.seed
     if seed is None:
-        seed = np.random.randint(0, (2 ** 32) - 1)
+        seed = np.random.randint(0, (2 ** 31) - 1)
         print("Using seed {}".format(seed))
 
     print("Loading data")
     print("----------")
 
     ds1_details = {
-            'data': loader.CreditDefaultData(verbose=verbose, seed=seed),
-            'name': 'credit_default',
-            'readable_name': 'Credit Default',
+            'data': loader.CarEvalData(verbose=verbose, seed=seed),
+            'name': 'car_eval',
+            'readable_name': 'Car Evaluation',
         }
     ds2_details = {
-            'data': loader.PenDigitData(verbose=verbose, seed=seed),
-            'name': 'pen_digits',
-            'readable_name': 'Handwritten Digits',
+            'data': loader.AdultIncomeData(verbose=verbose, seed=seed),
+            'name': 'adult_income',
+            'readable_name': 'Adult Income',
         }
 
     if verbose:

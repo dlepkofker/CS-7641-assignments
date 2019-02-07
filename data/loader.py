@@ -377,6 +377,69 @@ class StatlogVehicleData(DataLoader):
         return train_features, train_classes
 
 
+class CarEvalData(DataLoader):
+    def __init__(self, path='C:/Users/Dan/Workspace/CS7641/CS-7641-assignments/assignment1/data/car.data', verbose=False, seed=1):
+        super().__init__(path, verbose, seed)
+
+    def _load_data(self):
+        self._data = pd.read_csv(self._path, header=None)
+
+    def data_name(self):
+        return 'CarEvalData'
+
+    def class_column_name(self):
+        return '6'
+
+    def _preprocess_data(self):
+        # Encode categorical columns i.e. non-numerical
+        to_encode = [0, 1, 3, 4, 5, 6]
+        label_encoder = preprocessing.LabelEncoder()
+        # one_hot = preprocessing.OneHotEncoder()
+
+        df = self._data[to_encode]
+        df = df.apply(label_encoder.fit_transform)
+
+        # https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
+        # vec_data = pd.DataFrame(one_hot.fit_transform(df[to_encode]).toarray())
+
+        self._data = self._data.drop(to_encode, axis=1)
+        self._data = pd.concat([self._data, df], axis=1)
+
+    def pre_training_adjustment(self, train_features, train_classes):
+        return train_features, train_classes
+
+
+class AdultIncomeData(DataLoader):
+    def __init__(self, path='C:/Users/Dan/Workspace/CS7641/CS-7641-assignments/assignment1/data/adult.data', verbose=False, seed=1):
+        super().__init__(path, verbose, seed)
+
+    def _load_data(self):
+        self._data = pd.read_csv(self._path, header=None)
+
+    def data_name(self):
+        return 'AdultIncomeData'
+
+    def class_column_name(self):
+        return '14'
+
+    def _preprocess_data(self):
+        to_encode = [1, 3, 5, 6, 7, 8, 9, 13, 14]
+        label_encoder = preprocessing.LabelEncoder()
+        # one_hot = preprocessing.OneHotEncoder()
+
+        df = self._data[to_encode]
+        df = df.apply(label_encoder.fit_transform)
+
+        # https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
+        # vec_data = pd.DataFrame(one_hot.fit_transform(df[to_encode]).toarray())
+
+        self._data = self._data.drop(to_encode, axis=1)
+        self._data = pd.concat([self._data, df], axis=1)
+
+    def pre_training_adjustment(self, train_features, train_classes):
+        return train_features, train_classes
+
+
 if __name__ == '__main__':
     cd_data = CreditDefaultData(verbose=True)
     cd_data.load_and_process()
