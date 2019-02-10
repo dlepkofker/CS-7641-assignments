@@ -304,7 +304,27 @@ class AbaloneData(DataLoader):
         return '8'
 
     def _preprocess_data(self):
-        pass
+        to_encode = [0]
+        to_bin = [8]
+        labels = [1, 2, 3, 4]
+        label_encoder = preprocessing.LabelEncoder()
+        # one_hot = preprocessing.OneHotEncoder()
+
+        df = self._data[to_encode]
+        df = df.apply(label_encoder.fit_transform)
+
+        # https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
+        # vec_data = pd.DataFrame(one_hot.fit_transform(df[to_encode]).toarray())
+
+        self._data = self._data.drop(to_encode, axis=1)
+        self._data = pd.concat([df, self._data], axis=1)
+
+        df2 = self._data[to_bin]
+        df2.columns = ['8']
+        df2['8'] = pd.cut(df2['8'], 4, labels=labels)
+
+        self._data = self._data.drop(to_bin, axis=1)
+        self._data = pd.concat([self._data, df2], axis=1)
 
     def pre_training_adjustment(self, train_features, train_classes):
         return train_features, train_classes
@@ -378,7 +398,7 @@ class StatlogVehicleData(DataLoader):
 
 
 class CarEvalData(DataLoader):
-    def __init__(self, path='C:/Users/Dan/Workspace/CS7641/CS-7641-assignments/assignment1/data/car.data', verbose=False, seed=1):
+    def __init__(self, path='data/car.data', verbose=False, seed=1):
         super().__init__(path, verbose, seed)
 
     def _load_data(self):
@@ -392,7 +412,7 @@ class CarEvalData(DataLoader):
 
     def _preprocess_data(self):
         # Encode categorical columns i.e. non-numerical
-        to_encode = [0, 1, 3, 4, 5, 6]
+        to_encode = [0, 1, 2, 3, 4, 5, 6]
         label_encoder = preprocessing.LabelEncoder()
         # one_hot = preprocessing.OneHotEncoder()
 
@@ -410,7 +430,7 @@ class CarEvalData(DataLoader):
 
 
 class AdultIncomeData(DataLoader):
-    def __init__(self, path='C:/Users/Dan/Workspace/CS7641/CS-7641-assignments/assignment1/data/adult.data', verbose=False, seed=1):
+    def __init__(self, path='data/adult.data', verbose=False, seed=1):
         super().__init__(path, verbose, seed)
 
     def _load_data(self):
@@ -439,6 +459,25 @@ class AdultIncomeData(DataLoader):
     def pre_training_adjustment(self, train_features, train_classes):
         return train_features, train_classes
 
+
+class WineQualityData(DataLoader):
+    def __init__(self, path='data/winequality-white.csv', verbose=False, seed=1):
+        super().__init__(path, verbose, seed)
+
+    def _load_data(self):
+        self._data = pd.read_csv(self._path, header=1, sep=';')
+
+    def data_name(self):
+        return 'WineQualityData'
+
+    def class_column_name(self):
+        return '11'
+
+    def _preprocess_data(self):
+        pass
+
+    def pre_training_adjustment(self, train_features, train_classes):
+        return train_features, train_classes
 
 if __name__ == '__main__':
     cd_data = CreditDefaultData(verbose=True)

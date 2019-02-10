@@ -28,20 +28,22 @@ class SVMExperiment(experiments.BaseExperiment):
         # the various graphs
         #
         # Dataset 1:
-        # best_params_linear = {'C': 0.5, 'class_weight': 'balanced', 'loss': 'squared_hinge',
-        #                       'max_iter': 1478, 'tol': 0.06000001}
-        # best_params_rbf = {'C': 2.0, 'class_weight': 'balanced', 'decision_function_shape': 'ovo',
-        #                    'gamma': 0.05555555555555555, 'max_iter': -1, 'tol': 1e-08}
+        # best_params_linear = {'C': 1.001, 'class_weight': 'balanced', 'loss': 'squared_hinge',
+        #                       'max_iter': 300, 'tol': 0.00000001}
+        # best_params_rbf = {'C': 0.251, 'class_weight': 'balanced', 'decision_function_shape': 'ovo',
+        #                    'gamma': 0.125, 'max_iter': -1, 'tol': 0.00000001}
         # Dataset 2:
-        # best_params_linear = {'C': 1.0, 'class_weight': 'balanced', 'loss': 'hinge', 'dual': True,
-        #                       'max_iter': 70, 'tol': 0.08000001}
-        # best_params_rbf = {'C': 1.5, 'class_weight': 'balanced', 'decision_function_shape': 'ovo',
-        #                    'gamma': 0.125, 'max_iter': -1, 'tol': 0.07000001}
+        best_params_linear = {'C': 1.001, 'class_weight': 'balanced', 'loss': 'squared_hinge', 'dual': True,
+                              'max_iter': 724, 'tol': 0.01}
+        best_params_rbf = {'C': 2.251, 'class_weight': 'balanced', 'decision_function_shape': 'ovo',
+                           'gamma': 0.366666667, 'max_iter': -1, 'tol': 0.0900000099999999}
 
         # Linear SVM
         params = {'SVM__max_iter': iters, 'SVM__tol': tols, 'SVM__class_weight': ['balanced'],
                   'SVM__C': C_values}
-        complexity_param = {'name': 'SVM__C', 'display_name': 'Penalty', 'values': np.arange(0.001, 2.5, 0.1)}
+        #complexity_param = {'name': 'SVM__C', 'display_name': 'Penalty', 'values': np.arange(0.001, 2.5, 0.1)}
+        complexity_param = {'name': 'SVM__max_iter', 'display_name': 'Max Iterations',
+                            'values': [2**x for x in range(12)]}
 
         iteration_details = {
             'x_scale': 'log',
@@ -76,7 +78,9 @@ class SVMExperiment(experiments.BaseExperiment):
         params = {'SVM__max_iter': iters, 'SVM__tol': tols, 'SVM__class_weight': ['balanced'],
                   'SVM__C': C_values,
                   'SVM__decision_function_shape': ['ovo', 'ovr'], 'SVM__gamma': gamma_fracs}
-        complexity_param = {'name': 'SVM__C', 'display_name': 'Penalty', 'values': np.arange(0.001, 2.5, 0.1)}
+        #complexity_param = {'name': 'SVM__C', 'display_name': 'Penalty', 'values': np.arange(0.001, 2.5, 0.1)}
+        complexity_param = {'name': 'SVM__max_iter', 'display_name': 'Max Iterations',
+                            'values': [2 ** x for x in range(12)]}
 
         learner = learners.SVMLearner(kernel='rbf')
         if best_params_rbf is not None:

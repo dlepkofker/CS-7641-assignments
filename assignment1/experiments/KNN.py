@@ -23,10 +23,10 @@ class KNNExperiment(experiments.BaseExperiment):
         # the various graphs
         #
         # Dataset 1:
-        # best_params = {'metric': 'manhattan', 'n_neighbors': 7, 'weights': 'uniform'}
+        # best_params = {'metric': 'euclidean', 'n_neighbors': 1, 'weights': 'uniform'}
         #
         # Dataset 1:
-        # best_params = {'metric': 'euclidean', 'n_neighbors': 4, 'weights': 'uniform'}
+        best_params = {'metric': 'manhattan', 'n_neighbors': 7, 'weights': 'uniform'}
 
         learner = learners.KNNLearner(n_jobs=self._details.threads)
         if best_params is not None:

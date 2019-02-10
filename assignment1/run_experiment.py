@@ -46,14 +46,14 @@ if __name__ == '__main__':
     print("----------")
 
     ds1_details = {
-            'data': loader.CarEvalData(verbose=verbose, seed=seed),
-            'name': 'car_eval',
-            'readable_name': 'Car Evaluation',
+            'data': loader.AbaloneData(verbose=verbose, seed=seed),
+            'name': 'abalone_age',
+            'readable_name': 'Abalone Age',
         }
     ds2_details = {
-            'data': loader.AdultIncomeData(verbose=verbose, seed=seed),
-            'name': 'adult_income',
-            'readable_name': 'Adult Income',
+            'data': loader.CarEvalData(verbose=verbose, seed=seed),
+            'name': 'car_eval',
+           'readable_name': 'Car Evaluation',
         }
 
     if verbose:

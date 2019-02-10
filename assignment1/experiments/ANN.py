@@ -31,19 +31,23 @@ class ANNExperiment(experiments.BaseExperiment):
                                                            3000]},
             'pipe_params': timing_params
         }
-        complexity_param = {'name': 'MLP__alpha', 'display_name': 'Alpha', 'x_scale': 'log',
-                            'values': alphas}
+        #complexity_param = {'name': 'MLP__alpha', 'display_name': 'Alpha', 'x_scale': 'log',
+        #                    'values': alphas}
+
+        complexity_param = {'name': 'MLP__max_iter', 'display_name': 'Max Iterations', 'x_scale': 'log',
+                            'values': [2 ** x for x in range(12)] + [2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900,
+                                                           3000]}
 
         best_params = None
         # Uncomment to select known best params from grid search. This will skip the grid search and just rebuild
         # the various graphs
         #
         # Dataset 1:
-        # best_params = {'activation': 'relu', 'alpha': 1.0, 'hidden_layer_sizes': (36, 36),
-        #                'learning_rate_init': 0.016}
+        # best_params = {'activation': 'relu', 'alpha': 0.00316227766016837, 'hidden_layer_sizes': (4,),
+        #                'learning_rate_init': 0.001}
         # Dataset 2:
-        # best_params = {'activation': 'relu', 'alpha': 1e-05, 'hidden_layer_sizes': (16, 16),
-        #                'learning_rate_init': 0.064}
+        best_params = {'activation': 'relu', 'alpha': 0.01, 'hidden_layer_sizes': (12,),
+                       'learning_rate_init': 0.064}
 
         learner = learners.ANNLearner(max_iter=3000, early_stopping=True, random_state=self._details.seed,
                                       verbose=self._verbose)

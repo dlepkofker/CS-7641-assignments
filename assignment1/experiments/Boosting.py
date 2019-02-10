@@ -33,18 +33,20 @@ class BoostingExperiment(experiments.BaseExperiment):
             'params': {'Boost__n_estimators': [1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
         }
         of_params = {'Boost__base_estimator__max_depth': None}
-        complexity_param = {'name': 'Boost__learning_rate', 'display_name': 'Learning rate', 'x_scale': 'log',
-                            'values': [(2**x)/100 for x in range(7)]+[1]}
+        #complexity_param = {'name': 'Boost__learning_rate', 'display_name': 'Learning rate', 'x_scale': 'log',
+        #                    'values': [(2**x)/100 for x in range(7)]+[1]}
+        complexity_param = {'name': 'Boost__n_estimators', 'display_name': 'N_estimators', 'x_scale': 'linear',
+                           'values': [1, 2, 5, 10, 20, 30, 45, 60, 80, 90, 100]}
 
         best_params = None
         # Uncomment to select known best params from grid search. This will skip the grid search and just rebuild
         # the various graphs
         #
         # Dataset 1:
-        # best_params = {'base_estimator__max_depth': 8, 'learning_rate': 0.32, 'n_estimators': 90}
+        # best_params = {'base_estimator__max_depth': 4, 'learning_rate': 0.32, 'n_estimators': 20}
         #
         # Dataset 2:
-        # best_params = {'base_estimator__max_depth': 6, 'learning_rate': 0.16, 'n_estimators': 20}
+        best_params = {'base_estimator__max_depth': 5, 'learning_rate': 0.64, 'n_estimators': 45}
 
         if best_params is not None:
             booster.set_params(**best_params)
