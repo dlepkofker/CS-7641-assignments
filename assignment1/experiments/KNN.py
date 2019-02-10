@@ -14,9 +14,9 @@ class KNNExperiment(experiments.BaseExperiment):
 
     def perform(self):
         # Adapted from https://github.com/JonathanTay/CS-7641-assignment-1/blob/master/KNN.py
-        params = {'KNN__metric': ['manhattan', 'euclidean', 'chebyshev'], 'KNN__n_neighbors': np.arange(1, 51, 3),
+        params = {'KNN__metric': ['manhattan', 'euclidean', 'chebyshev'], 'KNN__n_neighbors': np.arange(1, 51, 2),
                   'KNN__weights': ['uniform']}
-        complexity_param = {'name': 'KNN__n_neighbors', 'display_name': 'Neighbor count', 'values': np.arange(1, 51, 1)}
+        complexity_param = {'name': 'KNN__n_neighbors', 'display_name': 'Neighbor count', 'values': np.arange(1, 51, 2)}
 
         best_params = None
         # Uncomment to select known best params from grid search. This will skip the grid search and just rebuild
@@ -26,7 +26,7 @@ class KNNExperiment(experiments.BaseExperiment):
         # best_params = {'metric': 'euclidean', 'n_neighbors': 1, 'weights': 'uniform'}
         #
         # Dataset 1:
-        best_params = {'metric': 'manhattan', 'n_neighbors': 7, 'weights': 'uniform'}
+        # best_params = {'metric': 'manhattan', 'n_neighbors': 7, 'weights': 'uniform'}
 
         learner = learners.KNNLearner(n_jobs=self._details.threads)
         if best_params is not None:
