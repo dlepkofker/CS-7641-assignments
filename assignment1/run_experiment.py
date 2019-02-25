@@ -49,11 +49,11 @@ if __name__ == '__main__':
             'data': loader.AbaloneData(verbose=verbose, seed=seed),
             'name': 'abalone_age',
             'readable_name': 'Abalone Age',
-        }
+       }
     ds2_details = {
             'data': loader.CarEvalData(verbose=verbose, seed=seed),
             'name': 'car_eval',
-           'readable_name': 'Car Evaluation',
+            'readable_name': 'Car Evaluation',
         }
 
     if verbose:
