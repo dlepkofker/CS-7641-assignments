@@ -9,7 +9,7 @@ from java.lang import Math
 __all__ = ['DS_NAME', 'TEST_DATA_FILE', 'TRAIN_DATA_FILE', 'VALIDATE_DATA_FILE', 'OUTPUT_DIRECTORY',
            'initialize_instances', 'error_on_data_set', 'train']
 
-DS_NAME = 'HTRU2Data'
+DS_NAME = 'CarEvalData'
 
 TEST_DATA_FILE = 'data/{}_test.csv'.format(DS_NAME)
 TRAIN_DATA_FILE = 'data/{}_train.csv'.format(DS_NAME)
@@ -44,11 +44,12 @@ def initialize_instances(infile):
         reader = csv.reader(dat)
 
         for row in reader:
-            instance = Instance([float(value) for value in row[:-1]])
+            instance = Instance([float(value) for value in row[:-4]])
             # TODO: Set to <= 0 to handle 0/1 labels and not just -1/1?
-            instance.setLabel(Instance(0 if float(row[-1]) < 0 else 1))
+            labelBinary = [0 if float(label) < 0 else 1 for label in row[-4:]]
+            # instance.setLabel(Instance([labelBinary.index(1)]))
+            instance.setLabel(Instance(labelBinary))
             instances.append(instance)
-
     return instances
 
 
@@ -57,12 +58,26 @@ def initialize_instances(infile):
 # https://www.kaggle.com/hongweizhang/how-to-calculate-f1-score
 # https://blog.exsilio.com/all/accuracy-precision-recall-f1-score-interpretation-of-performance-measures/
 def f1_score(labels, predicted):
-    get_count = lambda x: sum([1 for i in x if i is True])
+    # get_count = lambda x: sum([1 for i in x if i is True])
 
-    tp = get_count([predicted[i] == x and x == 1.0 for i, x in enumerate(labels)])
-    tn = get_count([predicted[i] == x and x == 0.0 for i, x in enumerate(labels)])
-    fp = get_count([predicted[i] == 1.0 and x == 0.0 for i, x in enumerate(labels)])
-    fn = get_count([predicted[i] == 0.0 and x == 1.0 for i, x in enumerate(labels)])
+    # tp = get_count([predicted[i] == x and x == 1.0 for i, x in enumerate(labels)])
+    # tn = get_count([predicted[i] == x and x == 0.0 for i, x in enumerate(labels)])
+    # fp = get_count([predicted[i] == 1.0 and x == 0.0 for i, x in enumerate(labels)])
+    # fn = get_count([predicted[i] == 0.0 and x == 1.0 for i, x in enumerate(labels)])
+
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+
+    for i in range(0, len(labels)):
+        for j in range(0, len(labels[0])):
+            if predicted[i][j] == 1.0:
+                tp += labels[i][j]
+                fp += (1 - labels[i][j])
+            else:
+                tn += (1 - labels[i][j])
+                fn += labels[i][j]
 
     if tp == 0:
         return 0, 0, 0
@@ -87,16 +102,28 @@ def error_on_data_set(network, ds, measure, ugh=False):
     for instance in ds:
         network.setInputValues(instance.getData())
         network.run()
-        actual = instance.getLabel().getContinuous()
-        predicted = network.getOutputValues().get(0)
-        predicted = max(min(predicted, 1), 0)
+        actual_out = instance.getLabel()
+        predicted_out = network.getOutputValues()
+        predicted = []
+        actual = []
+        for j in range(0, predicted_out.size()):
+            predicted.append(max(min(predicted_out.get(j), 1), 0))
+            if sum([round(cur) for cur in predicted]) > 1:
+                print "FOUND TWO ONES : {}".format([round(cur) for cur in predicted])
+            elif sum([round(cur) for cur in predicted]) == 0:
+                print "ALL ZEROS : {}".format([round(cur) for cur in predicted])
+
+        for k in range(0, actual_out.getData().size()):
+            actual.append(round(actual_out.getData().get(k)))
+
         if ugh:
             print "label: {}".format(instance.getLabel())
-            print "actual: {}, predicted: {}".format(actual, predicted)
+            print "actual: {}, predicted: {}".format(actual_out, predicted_out)
 
-        predicteds.append(round(predicted))
-        actuals.append(max(min(actual, 1), 0))
-        if abs(predicted - actual) < 0.5:
+        predicteds.append([round(cur) for cur in predicted])
+        actuals.append([max(min(cur, 1), 0) for cur in actual])
+        ind = max(xrange(len(predicted)), key=predicted.__getitem__)
+        if actual[ind] == 1:
             correct += 1
             if ugh:
                 print "CORRECT"
@@ -106,7 +133,7 @@ def error_on_data_set(network, ds, measure, ugh=False):
                 print "INCORRECT"
         output = instance.getLabel()
         output_values = network.getOutputValues()
-        example = Instance(output_values, Instance(output_values.get(0)))
+        example = Instance(output_values, Instance(output_values))
         error += measure.value(output, example)
         if ugh:
             print "error: {}".format(measure.value(output, example))

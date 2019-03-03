@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     seed = args.seed
     if seed is None:
-        seed = np.random.randint(0, (2 ** 32) - 1)
+        seed = np.random.randint(0, (2 ** 31) - 1)
         logger.info("Using seed {}".format(seed))
         np.random.seed(seed)
         rand.seed(seed)
@@ -56,15 +56,20 @@ if __name__ == '__main__':
         #     'readable_name': 'HTRU2',
         # },
         {
-            'data': loader.CreditApprovalData(verbose=verbose, seed=seed),
-            'name': 'credit_approval',
-            'readable_name': 'Credit Approval',
+           'data': loader.CarEvalData(verbose=verbose, seed=seed),
+           'name': 'car_eval',
+           'readable_name': 'Car Evaluation',
         },
-        {
-            'data': loader.PenDigitData(verbose=verbose, seed=seed),
-            'name': 'pen_digits',
-            'readable_name': 'Handwritten Digits',
-        }
+        # {
+        #    'data': loader.AbaloneData(verbose=verbose, seed=seed),
+        #    'name': 'abalone_data',
+        #    'readable_name': 'Abalone Age',
+        # }
+        # {
+        #     'data': loader.PenDigitData(verbose=verbose, seed=seed),
+        #     'name': 'pen_digits',
+        #     'readable_name': 'Handwritten Digits',
+        # }
         # {
         #     'data': loader.SpamData(verbose=verbose, seed=seed),
         #     'name': 'spam',

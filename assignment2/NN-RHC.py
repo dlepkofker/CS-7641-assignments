@@ -14,11 +14,11 @@ from func.nn.activation import RELU
 from base import *
 
 # Network parameters found "optimal" in Assignment 1
-INPUT_LAYER = 8
-HIDDEN_LAYER1 = 16
-HIDDEN_LAYER2 = 16
-OUTPUT_LAYER = 1
-TRAINING_ITERATIONS = 5001
+INPUT_LAYER = 6
+HIDDEN_LAYER1 = 12
+# HIDDEN_LAYER2 = 16
+OUTPUT_LAYER = 4
+TRAINING_ITERATIONS = 10000
 OUTFILE = OUTPUT_DIRECTORY + '/NN_OUTPUT/NN_{}_LOG.csv'
 
 
@@ -34,8 +34,10 @@ def main():
     # 50 and 0.000001 are the defaults from RPROPUpdateRule.java
     rule = RPROPUpdateRule(0.064, 50, 0.000001)
     oa_names = ["RHC"]
+    # classification_network = factory.createClassificationNetwork(
+    #     [INPUT_LAYER, HIDDEN_LAYER1, HIDDEN_LAYER2, OUTPUT_LAYER], relu)
     classification_network = factory.createClassificationNetwork(
-        [INPUT_LAYER, HIDDEN_LAYER1, HIDDEN_LAYER2, OUTPUT_LAYER], relu)
+        [INPUT_LAYER, HIDDEN_LAYER1, OUTPUT_LAYER], relu)
     nnop = NeuralNetworkOptimizationProblem(data_set, classification_network, measure)
     oa = RandomizedHillClimbing(nnop)
     train(oa, classification_network, 'RHC', training_ints, validation_ints, testing_ints, measure,
