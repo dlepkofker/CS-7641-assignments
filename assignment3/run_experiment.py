@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
     seed = args.seed
     if seed is None:
-        seed = np.random.randint(0, (2 ** 32) - 1)
+        seed = np.random.randint(0, (2 ** 31) - 1)
         logger.info("Using seed {}".format(seed))
         np.random.seed(seed)
         rand.seed(seed)
@@ -88,18 +88,18 @@ if __name__ == '__main__':
 
     datasets = []
     dataset1_details = {
-            'data': loader.StatlogVehicleData(verbose=verbose, seed=seed),
-            'name': 'statlog_vehicle',
-            'readable_name': 'Statlog Vehicle',
-            'best_nn_params': {'NN__activation': ['relu'], 'NN__alpha': [1.0],
-                               'NN__hidden_layer_sizes': [(36, 36)], 'NN__learning_rate_init': [0.016]}
+            'data': loader.CarEvalData(verbose=verbose, seed=seed),
+            'name': 'car_eval',
+            'readable_name': 'Car Evaluation',
+            'best_nn_params': {'NN__activation': ['relu'], 'NN__alpha': [0.01],
+                               'NN__hidden_layer_sizes': [(12, )], 'NN__learning_rate_init': [0.064]}
         }
     dataset2_details = {
-            'data': loader.HTRU2Data(verbose=verbose, seed=seed),
-            'name': 'htru2',
-            'readable_name': 'HTRU2',
-            'best_nn_params': {'NN__activation': ['relu'], 'NN__alpha': [1.0],
-                               'NN__hidden_layer_sizes': [(36, 36)], 'NN__learning_rate_init': [0.016]}
+            'data': loader.AbaloneData(verbose=verbose, seed=seed),
+            'name': 'abalone_age',
+            'readable_name': 'Abalone Age',
+            'best_nn_params': {'NN__activation': ['relu'], 'NN__alpha': [0.003162],
+                               'NN__hidden_layer_sizes': [(4, )], 'NN__learning_rate_init': [0.001]}
     }
     if args.dataset1:
         datasets.append(dataset1_details)

@@ -2,15 +2,25 @@ import os
 
 import pandas as pd
 import numpy as np
+import scipy.sparse as sps
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from matplotlib import cm
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.decomposition import PCA
+from scipy.linalg import pinv
 
 import experiments
 
+def reconstruction_error(projections, x):
+    w = projections.components_
+    if sps.issparse(w):
+        w = w.todense()
+    p = pinv(w)
+    reconstructed = ((p@w)@(x.T)).T  # Unproject projected data
+    errors = np.square(x-reconstructed)
+    return np.nanmean(errors, axis=1)
 
 class PCAExperiment(experiments.BaseExperiment):
 
@@ -19,7 +29,7 @@ class PCAExperiment(experiments.BaseExperiment):
         self._verbose = verbose
         self._nn_arch = [(50, 50), (50,), (25,), (25, 25), (100, 25, 100)]
         self._nn_reg = [10 ** -x for x in range(1, 5)]
-        self._clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40]
+        self._clusters = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100]
         self._dims = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
 
     def experiment_name(self):
@@ -35,6 +45,9 @@ class PCAExperiment(experiments.BaseExperiment):
         tmp = pd.Series(data=pca.explained_variance_, index=range(1, min(pca.explained_variance_.shape[0], 500) + 1))
         tmp.to_csv(self._out.format('{}_scree.csv'.format(self._details.ds_name)))
 
+        # Reconstruction error
+        errors = reconstruction_error(pca , self._details.ds.training_x)
+        tmp2 = 1
         # If the ds is small or the number of components is too large, the full solver is used for PCA and as a result
         # we need to re-create the array of dimensions. In that case we'll create a linear distribution from 2 to
         # ds.shape[1]

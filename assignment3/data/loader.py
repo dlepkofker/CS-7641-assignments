@@ -52,7 +52,6 @@ class DataLoader(ABC):
 
         self.features = None
         self.classes = None
-        self.reg_classes = None
         self.testing_x = None
         self.testing_y = None
         self.training_x = None
@@ -72,7 +71,6 @@ class DataLoader(ABC):
             self._data = data
             self.features = None
             self.classes = None
-            self.reg_classes = None
             self.testing_x = None
             self.testing_y = None
             self.training_x = None
@@ -103,7 +101,7 @@ class DataLoader(ABC):
 
         if len(class_dist) == 2:
             self.binary = True
-        self.balanced = is_balanced(self.reg_classes)
+        self.balanced = is_balanced(self.classes)
 
         self.log("Binary? {}", self.binary)
         self.log("Balanced? {}", self.balanced)
@@ -125,15 +123,14 @@ class DataLoader(ABC):
     def get_features(self, force=False):
         if self.features is None or force:
             self.log("Pulling features")
-            self.features = np.array(self._data.iloc[:, 0:-4])
+            self.features = np.array(self._data.iloc[:, 0:-1])
 
         return self.features
 
     def get_classes(self, force=False):
         if self.classes is None or force:
             self.log("Pulling classes")
-            # self.classes = np.array(self._data.iloc[:, -1])
-            self.classes = np.array(self._data.iloc[:, -4:])
+            self.classes = np.array(self._data.iloc[:, -1])
 
         return self.classes
 
@@ -144,9 +141,9 @@ class DataLoader(ABC):
                                                                            stratify=self.classes)
         pipe = Pipeline([('Scale', preprocessing.StandardScaler())])
         train_x = pipe.fit_transform(ds_train_x, ds_train_y)
-        train_y = np.atleast_2d(ds_train_y)
+        train_y = np.atleast_2d(ds_train_y).T
         test_x = pipe.transform(ds_test_x)
-        test_y = np.atleast_2d(ds_test_y)
+        test_y = np.atleast_2d(ds_test_y).T
 
         train_x, validate_x, train_y, validate_y = ms.train_test_split(train_x, train_y,
                                                                        test_size=test_size, random_state=random_state,
@@ -311,12 +308,13 @@ class AbaloneData(DataLoader):
         to_bin = [8]
         labels = [1, 2, 3, 4]
         label_encoder = preprocessing.LabelEncoder()
-        one_hot = preprocessing.OneHotEncoder()
-
-        self.reg_classes = np.array(self._data.iloc[:, -1])
+        # one_hot = preprocessing.OneHotEncoder()
 
         df = self._data[to_encode]
         df = df.apply(label_encoder.fit_transform)
+
+        # https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
+        # vec_data = pd.DataFrame(one_hot.fit_transform(df[to_encode]).toarray())
 
         self._data = self._data.drop(to_encode, axis=1)
         self._data = pd.concat([df, self._data], axis=1)
@@ -325,11 +323,8 @@ class AbaloneData(DataLoader):
         df2.columns = ['8']
         df2['8'] = pd.cut(df2['8'], 4, labels=labels)
 
-        # https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
-        vec_data = pd.DataFrame(one_hot.fit_transform(df2).toarray())
-
         self._data = self._data.drop(to_bin, axis=1)
-        self._data = pd.concat([self._data, vec_data], axis=1)
+        self._data = pd.concat([self._data, df2], axis=1)
 
     def pre_training_adjustment(self, train_features, train_classes):
         return train_features, train_classes
@@ -417,24 +412,18 @@ class CarEvalData(DataLoader):
 
     def _preprocess_data(self):
         # Encode categorical columns i.e. non-numerical
-        to_drop = [0, 1, 2, 3, 4, 5, 6]
-        to_encode = [0, 1, 2, 3, 4, 5]
-        oh_encode = [6]
+        to_encode = [0, 1, 2, 3, 4, 5, 6]
         label_encoder = preprocessing.LabelEncoder()
-        one_hot = preprocessing.OneHotEncoder()
-
-        self.reg_classes = np.array(self._data.iloc[:, -1])
+        # one_hot = preprocessing.OneHotEncoder()
 
         df = self._data[to_encode]
         df = df.apply(label_encoder.fit_transform)
 
-        df2 = self._data[oh_encode]
-
         # https://gist.github.com/ramhiser/982ce339d5f8c9a769a0
-        vec_data = pd.DataFrame(one_hot.fit_transform(df2[oh_encode]).toarray())
+        # vec_data = pd.DataFrame(one_hot.fit_transform(df[to_encode]).toarray())
 
-        self._data = self._data.drop(to_drop, axis=1)
-        self._data = pd.concat([self._data, df, vec_data], axis=1)
+        self._data = self._data.drop(to_encode, axis=1)
+        self._data = pd.concat([self._data, df], axis=1)
 
     def pre_training_adjustment(self, train_features, train_classes):
         return train_features, train_classes
